@@ -14,8 +14,7 @@ use Cake\ORM\Entity;
  * @property int $taux
  * @property float $indemnite_kilometrique
  * @property int $indemnite_appliquee
- * @property float $montant_indemnite
- * @property string $Motif
+ * @property string $etat
  * @property float $total
  * @property int $fonctionnaire_id
  * @property int $profpermanent_id

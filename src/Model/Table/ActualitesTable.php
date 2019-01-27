@@ -61,10 +61,8 @@ class ActualitesTable extends Table
             ->notEmpty('date');
 
         $validator
-            
-            ->allowEmpty('photo');
-        $validator
-            ->allowEmpty('file');
+            ->requirePresence('photo', 'create')
+            ->notEmpty('photo');
 
         return $validator;
     }

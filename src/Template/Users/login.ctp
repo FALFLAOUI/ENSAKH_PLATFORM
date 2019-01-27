@@ -18,5 +18,5 @@
       </div>
     </div>
   </div>
-  <button type="submit" class="btn btn-lg btn-primary btn-block">se connecter</button>
+  <button type="submit" class="btn btn-lg btn-primary btn-block">Sign In</button>
 </form>

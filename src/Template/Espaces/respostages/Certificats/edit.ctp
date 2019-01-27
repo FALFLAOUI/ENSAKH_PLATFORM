@@ -6,9 +6,13 @@
 <section class="content-header">
   <h1>
     Certificat
-   
+    <small><?= __('Edit') ?></small>
   </h1>
- 
+  <ol class="breadcrumb">
+    <li>
+    <?= $this->Html->link('<i class="fa fa-dashboard"></i> '.__('Back'), ['action' => 'index'], ['escape' => false]) ?>
+    </li>
+  </ol>
 </section>
 
 <!-- Main content -->
@@ -19,7 +23,7 @@
       <!-- general form elements -->
       <div class="box box-primary">
         <div class="box-header with-border">
-          <h3 class="box-title"><?= __('Editer certificat') ?></h3>
+          <h3 class="box-title"><?= __('Form') ?></h3>
         </div>
         
         <!-- /.box-header -->
@@ -37,7 +41,7 @@
           </div>
           <!-- /.box-body -->
           <div class="box-footer">
-            <?= $this->Form->button(__('Sauvegarder')) ?>
+            <?= $this->Form->button(__('Save'),['class'=>'fa fa-save']) ?>
           </div>
         <?= $this->Form->end() ?>
       </div>

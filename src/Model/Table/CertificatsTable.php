@@ -34,9 +34,9 @@ class CertificatsTable extends Table
     {
         parent::initialize($config);
 
-        $this->setTable('certificats');
-        $this->setDisplayField('id');
-        $this->setPrimaryKey('id');
+        $this->table('certificats');
+        $this->displayField('id');
+        $this->primaryKey('id');
 
         $this->addBehavior('Timestamp');
 
@@ -62,11 +62,6 @@ class CertificatsTable extends Table
         $validator
             ->requirePresence('type', 'create')
             ->notEmpty('type');
-
-        $validator
-            ->integer('nombre_max')
-            ->requirePresence('nombre_max', 'create')
-            ->notEmpty('nombre_max');
 
         return $validator;
     }

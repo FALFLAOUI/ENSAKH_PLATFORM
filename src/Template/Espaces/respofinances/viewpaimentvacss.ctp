@@ -1,6 +1,6 @@
 <section class="content-header">
   <h1>
-    <?php echo __('Paiement Vacation'); ?>
+    <?php echo __('Paiment Vacation'); ?>
   </h1>
 
 </section>

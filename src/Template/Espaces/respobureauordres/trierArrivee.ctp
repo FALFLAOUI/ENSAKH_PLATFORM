@@ -63,7 +63,15 @@
         <input type="text" class="form-control" placeholder="Rechercher selon désignation "  name="cat3" >
         </div>
          
-        
+        <div class="form-group">
+       <h4><b > Courrier Retourné:</b></h4>
+            <select  type="text" name="cat11" class="form-control select2"  style="width: 100%;">
+             <option disabled selected value></option>
+              <option value="Oui">Oui</option>
+              <option value="Non">Non</option>
+            </select>
+            </div>
+       
           
         </div>
         <div class="col-md-6">
@@ -123,7 +131,6 @@
               <option value="Non">Non</option>
             </select>
             </div>
-       
         
       </div>
 	  

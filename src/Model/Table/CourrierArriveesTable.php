@@ -95,6 +95,10 @@ class CourrierArriveesTable extends Table
             ->requirePresence('accuse', 'create')
             ->notEmpty('accuse');
 
+        $validator
+            ->maxLength('courrier_retourne', 5)
+            ->allowEmpty('courrier_retourne');
+
         return $validator;
     }
 

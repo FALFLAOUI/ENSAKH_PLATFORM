@@ -9,8 +9,6 @@ use Cake\Validation\Validator;
 /**
  * Destinataires Model
  *
- * @property \Cake\ORM\Association\HasMany $CourrierDeparts
- *
  * @method \App\Model\Entity\Destinataire get($primaryKey, $options = [])
  * @method \App\Model\Entity\Destinataire newEntity($data = null, array $options = [])
  * @method \App\Model\Entity\Destinataire[] newEntities(array $data, array $options = [])
@@ -36,8 +34,12 @@ class DestinatairesTable extends Table
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
+        $this->belongsTo('CourrierDeparts', [
+            'foreignKey' => 'nomComplet_destinataire',
+            'joinType' => 'INNER'
+        ]);
         $this->hasMany('CourrierDeparts', [
-            'foreignKey' => 'destinataire_id'
+            'foreignKey' => 'nomComplet_destinataire'
         ]);
     }
 
@@ -72,10 +74,6 @@ class DestinatairesTable extends Table
         $validator
             ->requirePresence('ville_destinataire', 'create')
             ->notEmpty('ville_destinataire');
-
-        $validator
-            ->requirePresence('pays_destinataire', 'create')
-            ->notEmpty('pays_destinataire');
 
         return $validator;
     }

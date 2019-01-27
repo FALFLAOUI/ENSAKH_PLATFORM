@@ -2,7 +2,7 @@
   
     <section class="content-header">
       <h1>
-        Les demandes des certificats de scolarité
+        Les demandes des certificats de stage
        <div id="filiereId" hidden="hidden"><?php $i=0; foreach ($filiere as $value) { echo $value['id'];if($i!=count($filiere)-1){echo" ,";} $i++; }?></div>
                 
       </h1>
@@ -70,8 +70,7 @@ endforeach; ?>
 
 
 <?php $this->start('scriptBotton'); ?>
-<script src="/admin_l_t_e/plugins/chartjs/Chart.min.js"></script>
-<script src="/Ensaksite/admin_l_t_e/plugins/chartjs/Chart.min.js"></script><!-- page script -->
+<script src="/admin_l_t_e/plugins/chartjs/Chart.min.js"></script><!-- page script -->
 <script>
 function graphe(p2,donnes) {
     /* ChartJS
@@ -91,8 +90,7 @@ function graphe(p2,donnes) {
     var areaChart2 = new Chart(areaChart2Canvas2);
 
     var areaChart2Data = {
-
-      labels: ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet","Août","Septembre","Octobre","Novembre","Decembre"],
+      labels: ["January", "February", "March", "April", "May", "June", "July","Août","Septembre","October","Novembre","Decembre"],
       datasets: [
         {
           label: "Digital Goods",

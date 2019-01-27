@@ -18,7 +18,7 @@
       <!-- general form elements -->
       <div class="box box-primary">
         <div class="box-header with-border">
-          <h3 class="box-title"><?= __('Formulaire') ?></h3>
+          <h3 class="box-title"><?= __('Form') ?></h3>
         </div>
         <!-- /.box-header -->
         <!-- form start -->
@@ -30,7 +30,7 @@
           </div>
           <!-- /.box-body -->
           <div class="box-footer">
-            <?= $this->Form->button(__('Sauvegarder')) ?>
+            <?= $this->Form->button(__('Save')) ?>
           </div>
         <?= $this->Form->end() ?>
       </div>

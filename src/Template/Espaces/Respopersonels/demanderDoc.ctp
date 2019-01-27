@@ -1,12 +1,14 @@
 <section class="content-header">
-<ol class="breadcrumb">
+  <h1>
+    Documents Professeur
+    <small><?= __('Add') ?></small>
+  </h1>
+  <ol class="breadcrumb">
     <li>
     <?= $this->Html->link('<i class="fa fa-dashboard"></i> '.__('Back'), ['action' => 'index'], ['escape' => false]) ?>
-    </li><br>
+    </li>
   </ol>
-
-
-</section><br><br>
+</section>
 <?php
 $i=1;
 $j=1;
@@ -23,22 +25,22 @@ $j=1;
     <!-- left column -->
     <div class="col-md-12">
       <!-- general form elements -->
-        <div class="panel panel-primary">
-     <div class="panel-heading"> - Déposer vos demandes : <div>
-
-
+      <div class="box box-primary">
+        <div class="box-header with-border">
+          <h3 class="box-title"><?= __('Form') ?></h3>
+        </div>
         <!-- /.box-header -->
         <!-- form start -->
         <?= $this->Form->create($documentsProfesseur, array('role' => 'form')) ?>
           <div class="box-body">
-          <?php?>
-          <div style='width:300px'>  <?php echo $this->Form->input('nomDoc', ['options' => $tab,'label'=>'NOM DOCUMENT :']);?></div>
-
+          <?php
+            echo $this->Form->input('nomDoc', ['options' => $tab]);
+          ?>
           </div>
           <!-- /.box-body -->
-
-            <?= $this->Form->button(__('Déposer Demande')) ?>
-
+          <div class="box-footer">
+            <?= $this->Form->button(__('Lancer Demande')) ?>
+          </div>
         <?= $this->Form->end() ?>
       </div>
     </div>

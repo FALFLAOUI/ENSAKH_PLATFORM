@@ -8,7 +8,7 @@
     </h1>
     <ol class="breadcrumb">
         <li>
-            <?= $this->Html->link('<i class="fa fa-dashboard"></i> ' . __('Retour'), ['action' => 'mouvementService'], ['escape' => false])?>
+            <?= $this->Html->link('<i class="fa fa-dashboard"></i> ' . __('Back'), ['action' => 'mouvementService'], ['escape' => false])?>
         </li>
     </ol>
 </section>
@@ -26,7 +26,7 @@
                 <div class="col_md-6 col-lg-12">
                     <table class="table table-striped">
                         <tbody>
-                        <tright style="margin:50px" class="img-rounded"><?php echo $this->Html->image('15.jpg'); ?></tright>
+                        <tright style="margin:50px" class="img-rounded"><?php echo $this->Html->image('9.jpg'); ?></tright>
 
                         <tr style="text-align: center">
                             <td><strong>NOM : </strong><?= h($fonctionnaire->nom_fct) ?></td>
@@ -41,19 +41,22 @@
                             <td><strong>DATE DEBUT : </strong><?= h($fonctionnaireServ->date_debut) ?></td>
                         </tr>
                         <tr style="text-align: center">
+                            <td><strong>SOMME : </strong><?= h($fonctionnaire->somme) ?></td>
+                        </tr>
+                        <tr style="text-align: center">
                             <td><strong>DATE NAISSANCE : </strong><?= h($fonctionnaire->dateNaissance) ?></td>
                         </tr>
                         <tr style="text-align: center">
                             <td><strong>LIEU NAISSANCE : </strong><?= h($fonctionnaire->lieuNaissance) ?></td>
                         </tr>
                         <tr style="text-align: center">
-                            <td><strong>ETAT : </strong><?= h($fonctionnaire->etat) ?></td>
+                            <td><strong>CODE GRADE : </strong><?= h($fonctionnaire->codeGrade) ?></td>
                         </tr>
                         <tr style="text-align: center">
-                            <td><strong>SITUATION FAMILIALE : </strong><?= h($fonctionnaire->situation_Familiale) ?></td>
+                            <td><strong>CODE DIPLOME : </strong><?= h($fonctionnaire->cdDiplome) ?></td>
                         </tr>
                         <tr style="text-align: center">
-                            <td><strong>NOMBRE D'ENFANTS : </strong><?= h($fonctionnaire->nbr_enfants) ?></td>
+                            <td><strong>UE DIPLOME : </strong><?= h($fonctionnaire->ueDiplome) ?></td>
                         </tr>
                         <tr style="text-align: center">
                             <td><strong>EMAIL : </strong><?= h($fonctionnaire->email) ?></td>

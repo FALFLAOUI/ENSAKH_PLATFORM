@@ -24,7 +24,7 @@
         <?= $this->Form->create() ?>
           <div class="box-body">
           <?php
-            echo $this->Form->input("numerodInventaire",['label'=>"Numéro d'Inventaire"]);
+            echo $this->Form->input("numerodInventaire");
           ?>
           </div>
           <!-- /.box-body -->

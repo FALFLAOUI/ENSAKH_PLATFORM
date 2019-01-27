@@ -2,7 +2,11 @@
   <h1>
     <?php echo __('Certificat'); ?>
   </h1>
- 
+  <ol class="breadcrumb">
+    <li>
+    <?= $this->Html->link('<i class="fa fa-dashboard"></i> ' . __('Back'), ['action' => 'indexCertificats'], ['escape' => false])?>
+    </li>
+  </ol>
 </section>
 
 <!-- Main content -->
@@ -26,7 +30,7 @@
                                         <dd>
                                             <?= h($certificat->type) ?>
                                         </dd>  
-                                        <dt><?= __('Nombre maximal') ?></dt>
+                                        <dt><?= __('Nombre max') ?></dt>
                                         <dd>
                                             <?= h($certificat->nombre_max) ?>
                                         </dd> 

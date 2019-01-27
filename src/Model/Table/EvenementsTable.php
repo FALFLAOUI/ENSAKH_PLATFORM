@@ -69,8 +69,8 @@ class EvenementsTable extends Table
             ->notEmpty('texte');
 
         $validator
-            
-            ->allowEmpty('photo');
+            ->requirePresence('photo', 'create')
+            ->notEmpty('photo');
 
         return $validator;
     }

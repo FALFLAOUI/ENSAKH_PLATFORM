@@ -3,7 +3,8 @@
   <h1>
     Liste des vacataires
     <div class="pull-right">
-       <br>
+      <?= $this->Html->link(__('Nouveau.vacataire'), ['action' => 'addvac'], ['class'=>'btn btn-primary btn-xs',
+      'class'=>'glyphicon glyphicon-user']) ?> <br>
       <?= $this->Html->link(__('Imprimer.la.Liste'), ['action' => 'printListeVacataire'], ['class'=>'btn btn-primary btn-xs',
         'class'=>'glyphicon glyphicon-duplicate']) ?></div>
   </h1>

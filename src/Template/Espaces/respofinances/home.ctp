@@ -1,7 +1,7 @@
 <section class="content">
     <div class="row">
         <div class="col-lg-3 col-xs-6">
-            <a href="/Ensaksite/respofinances/vacations" class="small-box-footer">
+            <a href="/ensaksite/respofinances/vacations" class="small-box-footer">
                 <div class="small-box" style="background-color: #336E7B; color: #fff">
                     <div class="inner">
                         <h3> Vacations</h3>
@@ -14,7 +14,7 @@
             </a>
         </div>
         <div class="col-lg-3 col-xs-6">
-            <a href="/Ensaksite/respofinances/listprof/" class="small-box-footer">
+            <a href="/ensaksite/respofinances/listprof/" class="small-box-footer">
                 <div class="small-box" style="background-color: #66CC99; color: #fff">
                     <div class="inner">
                         <h3>Heures sup</h3>
@@ -27,7 +27,7 @@
             </a>
         </div>
         <div class="col-lg-3 col-xs-6">
-            <a href="/Ensaksite/respofinances/afficherMissionProf" class="small-box-footer">
+            <a href="/ensaksite/respofinances/afficherMissionProf" class="small-box-footer">
                 <div class="small-box" style="background-color: #F9BF3B; color: #fff">
                     <div class="inner">
                         <h3>Missions</h3>
@@ -57,7 +57,7 @@
         <div class="col-sm-4">
             <section class="panel" >
                 <div class="profile-db-head" style="background-color: #336E7B; color: #fff"><br/>
-                    <p style="text-align:center;"><img src="/Ensaksite/img/respofinance/8d8e353b98d5191d5ceea1aa3eb05d43.png" class="img-circle" alt=""  width="75px" ></p>
+                    <p style="text-align:center;"><img src="/ensaksite/admin_l_t_e/img/respofinance.png" class="img-circle" alt=""  width="75px" ></p>
                     <h3><p style="text-align:center;">Mr. Respo Finance</p></h3>
                     <p style="text-align:center;"><?= $role ?></p>
                 </div>
@@ -99,24 +99,8 @@
             <div class="box-body" style="padding: 0px;height: 345px;background-color: #fff;">
                 <div class="box box-primary">
                     <div class="box-header" >
-                        <h3 class="box-title text-black">Dernières commandes</h3>
-                        <div class="pull-right"><?= $this->Html->link(__('Suivi des commandes'), ['action' => 'suivicommande'], ['class'=>'btn btn-primary btn-xs']) ?></div>
-        <table class="table table-hover">
-            <tr>
-              <th><?= $this->Paginator->sort('N°') ?></th>
-              <th><?= $this->Paginator->sort('Nom de la commande') ?></th>
-              <th><?= $this->Paginator->sort('Intitulé') ?></th>
-              <th><?= $this->Paginator->sort('Nom du fournisseur') ?></th>
-            </tr>
-            <?php foreach ($devisdemandes as $devisdemande): ?>
-              <tr>
-                <td><?= $this->Number->format($devisdemande->id) ?></td>
-                <td><?= h($devisdemande->nom_devis) ?></td>
-                <td><?= h($devisdemande->intitule) ?></td>
-                <td><?= h($devisdemande->nom_fournisseur) ?></td>
-              </tr>
-            <?php endforeach; ?>
-          </table>
+                        <h3 class="box-title text-black">Suggestions</h3>
+                        <div class="pull-right"><?= $this->Html->link(__('Consulter suggestions'), ['action' => 'listproposition'], ['class'=>'btn btn-primary btn-xs']) ?></div>
                     </div>
                     <div class="box-body" style="padding: 0px; height: 308px; overflow: auto">
                         <table class="table table-hover">

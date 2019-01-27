@@ -1,5 +1,3 @@
-
-
 <!-- Content Header (Page header) -->
 <section class="content-header">
   <h1>
@@ -30,13 +28,12 @@
                 <th scope="col"><?= $this->Paginator->sort('prenom_fournisseur') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('label_fournisseur') ?></th>
             </tr>
-            
-<?php foreach ($fournisseurs as $fournisseur): ?>
+            <?php foreach ($fournisseurs as $fournisseur): ?>
             <tr>
-                <td><?php echo $fournisseur['id']?></td>
-				<td><?php echo $fournisseur['nom_fournisseur']?></td>
-				<td><?php echo $fournisseur['prenom_fournisseur']?></td>
-				<td><?php echo $fournisseur['label_fournisseur']?></td>
+                <td><?= $this->Number->format($fournisseur->id) ?></td>
+                <td><?= h($fournisseur->nom_fournisseur) ?></td>
+                <td><?= h($fournisseur->prenom_fournisseur) ?></td>
+                <td><?= h($fournisseur->label_fournisseur) ?></td>
             </tr>
             <?php endforeach; ?>
           </table>

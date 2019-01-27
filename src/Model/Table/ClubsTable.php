@@ -33,9 +33,6 @@ class ClubsTable extends Table
         $this->table('clubs');
         $this->displayField('id');
         $this->primaryKey('id');
-        $this->hasMany('ActualiteClubs', [
-            'foreignKey' => 'id_club'
-        ]);
     }
 
     /**
@@ -72,8 +69,8 @@ class ClubsTable extends Table
             ->notEmpty('texte');
 
         $validator
-            
-            ->allowEmpty('logo');
+            ->requirePresence('logo', 'create')
+            ->notEmpty('logo');
 
         return $validator;
     }

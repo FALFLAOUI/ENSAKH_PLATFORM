@@ -56,26 +56,25 @@ public function index() {
 
     /******* FADILI  ********/
 
- //******fadili****
     public function getDestinataire($typeD) {
 
         $usrole=$this->Auth->user('role');
         $this->set('role',$usrole);
         $cnx=ConnectionManager::get('default');
         $usrID=$this->Auth->user('id');
-        $monIdDsMaTable = $cnx->execute("SELECT id FROM profpermanents WHERE user_id = $usrID ")->fetchAll('assoc');
-        $monIdDsMaTable = $monIdDsMaTable['0']['id'];
+        $monIdDsMaTablee = $cnx->execute("SELECT id FROM profpermanents WHERE user_id = $usrID ")->fetchAll('assoc');
+        $monIdDsMaTable = $monIdDsMaTablee['0']['id'];
         $session = $this->request->session();
         if (strcmp($typeD, 'etudiantSpecifie') == 0) {
             $year = $this->genererAnneeScol();
             $semestre = $this->genererSemester();
-            $typeDest = $cnx->execute("SELECT DISTINCT grp.id, f.libile as filiere, n.libile as niveau, s.libile as semestre
+            $typeDest = $cnx->execute("SELECT grp.id, f.libile as filiere, n.libile as niveau, s.libile as semestre
           FROM elements elt, modules m, semestres s, groupes grp,
           filieres f, niveaus n, profpermanents p, enseigners ens, annee_scolaires a
           WHERE 
                 p.id = $monIdDsMaTable  AND p.id = ens.profpermanent_id AND elt.id = ens.element_id  AND m.id = elt.module_id
-          AND   grp.id = m.groupe_id AND n.id = grp.niveaus_id and ens.semestre_id = s.id and (s.id like $semestre[0] OR s.id like $semestre[1]
-          OR   s.id like $semestre[2]) and f.id = grp.filiere_id and ens.annee_scolaire_id = a.id and a.libile like '$year'
+          AND   grp.id = m.groupe_id AND n.id = grp.niveaus_id and ens.semestre_id = s.id and (s.libile like '$semestre[0]' OR s.libile like '$semestre[1]'
+          OR   s.libile like '$semestre[2]') and f.id = grp.filiere_id and ens.annee_scolaire_id = a.id and a.libile like '$year'
            
            ")->fetchAll('assoc');
             $session->write('typeDest', $typeDest);
@@ -87,15 +86,13 @@ public function index() {
         if (strcmp($typeD, 'etudiants') == 0) {
             $year = $this->genererAnneeScol();
             $semestre = $this->genererSemester();
-            $typeDest = $cnx->execute("
-                SELECT DISTINCT grp.id, f.libile as filiere, n.libile as niveau, s.libile as semestre
+            $typeDest = $cnx->execute("SELECT grp.id, f.libile as filiere, n.libile as niveau, s.libile as semestre
           FROM elements elt, modules m, semestres s, groupes grp,
           filieres f, niveaus n, profpermanents p, enseigners ens, annee_scolaires a
           WHERE 
                 p.id = $monIdDsMaTable  AND p.id = ens.profpermanent_id AND elt.id = ens.element_id  AND m.id = elt.module_id
-          AND   grp.id = m.groupe_id AND n.id = grp.niveaus_id and ens.semestre_id = s.id and (s.id like $semestre[0] OR s.id like $semestre[1]
-          OR   s.id like $semestre[2]) and f.id = grp.filiere_id and ens.annee_scolaire_id = a.id 
-          and a.libile like '$year'
+          AND   grp.id = m.groupe_id AND n.id = grp.niveaus_id and ens.semestre_id = s.id and (s.libile like '$semestre[0]' OR s.libile like '$semestre[1]'
+          OR   s.libile like '$semestre[2]') and f.id = grp.filiere_id and ens.annee_scolaire_id = a.id and a.libile like '$year'
                ")->fetchAll('assoc');
             }
 
@@ -131,11 +128,13 @@ public function index() {
         $usrole=$this->Auth->user('role');
         $this->set('role',$usrole);
         $monid = $this->Auth->user('id');
-        $monIdDsMaTable = $cnx->execute("SELECT id FROM profpermanents WHERE user_id = $monid ")->fetchAll('assoc');
-        $monIdDsMaTable = $monIdDsMaTable['0']['id'];
+        
+        
+        $monIdDsMaTablee = $cnx->execute("SELECT id FROM profpermanents WHERE user_id = $monid ")->fetchAll('assoc');
+        
+        $monIdDsMaTable = $monIdDsMaTablee['0']['id'];
         Time::setToStringFormat('yyyy-MM-dd HH:mm:ss');
-        $semestre = $this->genererSemester();
-        $year = $this->genererAnneeScol();
+
 
         $mesMessages=$cnx->execute("
         SELECT u.username, role, m.sujet, m.contenu, TIME_TO_SEC(TIMEDIFF(now(), date)) as inttervale,m.id, date
@@ -152,14 +151,13 @@ public function index() {
         FROM diffusions_messages dmg, messages m, users u
         where dmg.user_id = u.id and dmg.message_id  = m.id AND role like 'resposcolarite' and m.id NOT IN (SELECT DISTINCT message_id FROM asupprimer WHERE user_id = $monid) 
         and ((dmg.typerecepteur like 'profsParFiliere' AND 
-        dmg.group_id IN (SELECT DISTINCT m.groupe_id FROM profpermanents p, enseigners ens, elements as elt, modules m, annee_scolaires a
-        WHERE  p.id = ens.profpermanent_id and elt.id = ens.element_id and m.id = elt.module_id and p.id = $monIdDsMaTable 
-        and a.id = ens.annee_scolaire_id and a.libile like '$year' 
-        and ens.semestre_id in ($semestre[0], $semestre[1], $semestre[2])))
+        dmg.group_id IN (SELECT DISTINCT grp.id FROM profpermanents p, enseigners ens, elements elt, modules m, groupes grp 
+              WHERE  p.id = ens.profpermanent_id and elt.id = ens.element_id and m.id = elt.module_id
+              and grp.id = dmg.group_id)) 
         OR (dmg.typerecepteur like 'profsParDept' AND 
                dmg.departement_id IN (SELECT DISTINCT dept.departement_id FROM profpermanents_departements dept 
                WHERE  dept.profpermanent_id = $monIdDsMaTable )) OR dmg.typerecepteur like 'profs' )
-               ORDER BY inttervale
+               order by inttervale
         ")->fetchAll('assoc');
         $this->set('mesMsgs',$mesMessages);
 
@@ -245,7 +243,7 @@ public function index() {
         $nomFichier = $this->suppAccent($nomFichier);
         if(strcmp($this->request->getData('attachment')["name"],'') != 0)
         {
-            $attachementPath = "/ensaksite/webroot/messageriesFiles/" . $msg['0']['id'] . $nomFichier;
+            $attachementPath = "/Ensaksite/webroot/messageriesFiles/" . $msg['0']['id'] . $nomFichier;
             move_uploaded_file($this->request->getData('attachment')["tmp_name"], 'messageriesFiles/'.$msg['0']['id'].$nomFichier );
         }
         else
@@ -367,8 +365,8 @@ public function index() {
     }
     public function genererAnneeScol() {
         $year = (int)date("Y");
-        $month = (int)date("m");
- 
+        $month = (int)date("M");
+
         if ($month <= 6) {
             $y1 = $year-1;
             return $y1.'/'.$year;
@@ -379,17 +377,16 @@ public function index() {
         }
     }
 
-     public function genererSemester() {
-        $month = (int)date("m");
+    public function genererSemester() {
+        $month = (int)date("M");
         if ($month >= 9 || $month < 2) {
-            return array(1, 3, 5);
+            return array('S1', 'S3', 'S5');
         }
         else{
-            return array(2, 4, 6);
+            return array('S2', 'S4', 'S6');
         }
     }
-
-    //*****fadili****
+    
 
     /******* FIN FADILI  ********/
 
@@ -712,7 +709,6 @@ public function index() {
 
     /***** Fin Badr *******/
 
-    
     /******* Benchayda **********/
 
     public function showClass() {
@@ -819,43 +815,29 @@ public function index() {
         }
     }
 
-    // modifier_3/21/2017
     public function getStudentsMarksOrderBy($element_id, $order_key) {
         $conn = ConnectionManager::get('default');
-        $classe_id =  $this->request->session()->read('class_id');
-        $annee_scolaire_id = $this->getSchoolId();
         return $conn->execute(
             "SELECT n.* ,et.cne , et.nom_fr, et.prenom_fr, el.id as element_id, el.libile  "
             . "FROM notes n, elements el, etudiants et , etudiers e "
             . "WHERE el.id = $element_id AND "
             . "n.element_id = el.id AND "
             . "et.id = e.etudiant_id AND "
-            . "e.id = n.etudier_id AND "
-            . "e.groupe_id = $classe_id AND "
-            . "e.annee_scolaire_id = $annee_scolaire_id"
+            . "e.id = n.etudier_id "
             . " ORDER BY $order_key desc"
         );
     }
 
-    // modifier_3/21/2017
     public function showStudents($message = null, $order_key = null) {
         $element_id  = $this->request->data('element_id');
         $classe_id =  $this->request->session()->read('class_id');
-        $annee_scolaire_id = $this->getSchoolId();
+
         $conn = ConnectionManager::get('default');
         $stmt = null;
         $first_time = $this->isAdded($element_id);
         switch ($first_time){
             case true :
                 $stmt = $this->getStudentsMarks($element_id, $order_key);
-                $note_data = $this->getAvgMaxMinNoteByElementId($element_id);
-                $noteStatisitique = $note_data->fetchAll('assoc');
-                $rest = $this->getRestASaisir($element_id);
-                $restASaisir = $rest->fetchAll('assoc');
-                $this->set('statisticNotes', $noteStatisitique);
-                $this->set('restASaisir', $restASaisir);
-                //echo '<pre>';
-                //print_r($noteStatisitique);die();
                 break;
             case false:
                 $stmt = $conn->execute(
@@ -864,8 +846,7 @@ public function index() {
                     . "WHERE el.id = $element_id AND "
                     . "e.element_id = el.id AND "
                     . "et.id = e.etudiant_id AND "
-                    . "e.groupe_id = $classe_id AND "
-                    . "e.annee_scolaire_id = $annee_scolaire_id"
+                    . "e.groupe_id = $classe_id"
                 );
                 break;
         }
@@ -873,7 +854,6 @@ public function index() {
         $this->set('first_time', !$first_time);
         $this->set("etudiants", $rows);
         $this->set('message', $message);
-        
         try {
             $for_pv = $this->request->session()->read('for_pv');
             $for_ratt = $this->request->session()->read('for_ratt');
@@ -881,7 +861,7 @@ public function index() {
             $for_pv = 0;
             $for_ratt = 0;
         }
-        
+        //echo $for_pv.'<br/>'.$for_ratt;die();
         $this->set('for_pv', $for_pv);
         $this->set('for_ratt', $for_ratt);
         $this->set('anneeScolaire', $this->getAnneeScolaire($rows[0]['etudier_id']));
@@ -913,51 +893,27 @@ public function index() {
             switch ($action) {
                 case "confirme":
                     if ($query === "insert") {
-                        $null = false;
                         for($i = 0; $i < $lenght ; $i++){
-                            if ($this->request->data('note_'.$i) == null) {
-                                $null = true;
+                            $noteTable = TableRegistry::get('Notes');
+                            $note = $noteTable->newEntity();
+                            $note->note = $this->request->data('note_'.$i);
+                            $note->element_id = $element_id;
+                            $note->saved = 1;
+                            $note->confirmed = 1;
+                            $note->created_at = date("Y-m-d H:i:s");
+                            $note->updated_at = date("Y-m-d H:i:s");
+                            $note->etudier_id = $this->request->data('etudiant_'.$i);
+                            if ($noteTable->save($note)) {
+                                $inserted[] = $note->id;
                             }
                         }
-                        if(!$null){
-                            for($i = 0; $i < $lenght ; $i++){
-                                
-                                    $noteTable = TableRegistry::get('Notes');
-                                    $note = $noteTable->newEntity();
-                                    //Test beta 
-                                    $note->id = $element_id.''.$this->request->data('etudiant_'.$i);
-                                    //--------
-                                    if($this->request->data('note_'.$i) <= 20){
-                                        $note->note = $this->request->data('note_'.$i);
-                                    }
-                                    else{
-                                        $msg = "certaine note que vous avez inséré sont supérieur a la note normale!";
-                                        $note->note = 0;
-                                    }
-                                    $note->element_id = $element_id;
-                                    $note->saved = 1;
-                                    $note->confirmed = 1;
-                                    $note->created_at = date("Y-m-d H:i:s");
-                                    $note->updated_at = date("Y-m-d H:i:s");
-                                    $note->etudier_id = $this->request->data('etudiant_'.$i);
-                                    if ($noteTable->save($note)) {
-                                        $inserted[] = $note->id;
-                                    }
-                            }
-                            return $this->setAction('showStudents', $msg);
-                        }
-                        else{
-                            $msg = "Certain champs sont vide!";
-                            return $this->setAction('showStudents', $msg);
-                        }
-                        
                     }
                     else if($query === "update"){
                         $updated_note_counter = 0;
                         for($i = 0; $i < $lenght ; $i++){
                             $noteTable = TableRegistry::get('Notes');
                             $note = $noteTable->get($this->request->data('etudiant_'.$i)); // Return article with id 12
-                            if (($note->confirmed !== 1 || ($for_pv && !$for_ratt)) && $this->request->data('note_'.$i) <= 20) {
+                            if ($note->confirmed !== 1 || ($for_pv && !$for_ratt)) {
                                 $old_note = $note->note;
                                 $note->note = $this->request->data('note_'.$i);
                                 $new_note = $this->request->data('note_'.$i);
@@ -966,7 +922,7 @@ public function index() {
                                 $note->updated_at = date("Y-m-d H:i:s");
                                 $noteTable->save($note);
                             }
-                            else if(($note->ratt_confirmed !== 1 || ($for_pv && $for_ratt)) && $this->request->data('note_'.$i) <= 12){
+                            else if($note->ratt_confirmed !== 1 || ($for_pv && $for_ratt)){
                                 $old_note = $note->note_ratt;
                                 $note->note_ratt = $this->request->data('ratt_note_'.$i);
                                 $new_note = $this->request->data('ratt_note_'.$i);
@@ -987,44 +943,26 @@ public function index() {
                     break;
                 case "save":
                     if ($query === "insert") {
-                        $null = false;
                         for($i = 0; $i < $lenght ; $i++){
-                            if ($this->request->data('note_'.$i) == null) {
-                                $null = true;
+                            $noteTable = TableRegistry::get('Notes');
+                            $note = $noteTable->newEntity();
+                            $note->note = $this->request->data('note_'.$i);
+                            $note->element_id = $element_id;
+                            $note->saved = 1;
+                            $note->confirmed = 0;
+                            $note->created_at = date("Y-m-d H:i:s");
+                            $note->updated_at = date("Y-m-d H:i:s");
+                            $note->etudier_id = $this->request->data('etudiant_'.$i);
+                            if ($noteTable->save($note)) {
+                                $inserted[] = $note->id;
                             }
-                        }
-                        if(!$null){
-                            for($i = 0; $i < $lenght ; $i++){
-                                
-                                    $noteTable = TableRegistry::get('Notes');
-                                    $note = $noteTable->newEntity();
-                                    if($this->request->data('note_'.$i) <= 20){
-                                        $note->note = $this->request->data('note_'.$i);
-                                    }else{
-                                        $note->note = 0;
-                                    }
-                                    $note->element_id = $element_id;
-                                    $note->saved = 1;
-                                    $note->confirmed = 0;
-                                    $note->created_at = date("Y-m-d H:i:s");
-                                    $note->updated_at = date("Y-m-d H:i:s");
-                                    $note->etudier_id = $this->request->data('etudiant_'.$i);
-                                    if ($noteTable->save($note)) {
-                                        $inserted[] = $note->id;
-                                    }
-                                
-                            }
-                            return $this->setAction('showStudents', $msg);
-                        }else{
-                            $msg = "Certain champs sont vide!";
-                            return $this->setAction('showStudents', $msg);
                         }
                     }
                     else if($query === "update"){
                         for($i = 0; $i < $lenght ; $i++){
                             $noteTable = TableRegistry::get('Notes');
                             $note = $noteTable->get($this->request->data('etudiant_'.$i)); // Return article with id 12
-                            if (($note->confirmed !== 1 || ($for_pv && !$for_ratt)) && $this->request->data('note_'.$i) <= 20) {
+                            if ($note->confirmed !== 1 || ($for_pv && !$for_ratt)) {
                                 $note->note = $this->request->data('note_'.$i);
                                 $note->saved = 1;
                                 $note->updated_at = date("Y-m-d H:i:s");
@@ -1035,8 +973,8 @@ public function index() {
                                     $msg = "Error somthing wrong !!!";
                                 }
                             }
-                            else if((($note->ratt_confirmed !== 1 && $for_ratt) || ($for_pv && $for_ratt)) && $this->request->data('ratt_note_'.$i) <= 12){
-                                $note-> note_ratt = $this->request->data('ratt_note_'.$i);
+                            else if($note->ratt_confirmed !== 1 || ($for_pv && $for_ratt)){
+                                $note->	note_ratt = $this->request->data('ratt_note_'.$i);
                                 $note->ratt_saved = 1;
                                 $note->updated_at = date("Y-m-d H:i:s");
                                 if($noteTable->save($note)){
@@ -1210,47 +1148,10 @@ public function index() {
             }
         }
     }
-    
-    //modifier_3/21/2017
-    private function getAvgMaxMinNoteByElementId($element_id){
-        $conn = ConnectionManager::get('default');
-        $classe_id =  $this->request->session()->read('class_id');
-        $annee_scolaire_id = $this->getSchoolId();
-        return $conn->execute(
-            "SELECT AVG(CASE WHEN n.ratt_confirmed = 1 AND n.note_ratt IS NOT NULL THEN n.note_ratt ELSE n.note END) AS avg_note, MIN(n.note) AS min_note, MAX(n.note) AS max_note "
-            . "FROM notes n, elements el, etudiants et , etudiers e "
-            . "WHERE el.id = $element_id AND "
-            . "n.element_id = el.id AND "
-            . "et.id = e.etudiant_id AND "
-            . "e.id = n.etudier_id AND "
-            . "e.groupe_id = $classe_id AND "
-            . "e.annee_scolaire_id = $annee_scolaire_id"
-        );
-    }
-    
-    //modifier3/21/2017
-    private function getRestASaisir($element_id){
-        $conn = ConnectionManager::get('default');
-        $classe_id =  $this->request->session()->read('class_id');
-        $annee_scolaire_id = $this->getSchoolId();
-        return $conn->execute(
-            "SELECT COUNT(n.id) non_saisie "
-            . "FROM notes n, elements el, etudiants et , etudiers e "
-            . "WHERE el.id = $element_id AND "
-            . "n.element_id = el.id AND "
-            . "et.id = e.etudiant_id AND "
-            . "e.id = n.etudier_id AND "
-            . "e.groupe_id = $classe_id AND "
-            . "e.annee_scolaire_id = $annee_scolaire_id AND "
-            . "n.note IS NULL"
-        );
-    }
-    
-// modifier_3/21/2017
+
     private function getStudentsMarks($element_id, $order_key) {
         $conn = ConnectionManager::get('default');
-        $classe_id =  $this->request->session()->read('class_id');
-        $annee_scolaire_id = $this->getSchoolId();
+
         if ($order_key == null || $order_key == "DEFAULT") {
             return $conn->execute(
                 "SELECT n.* ,et.cne , et.nom_fr, et.prenom_fr, el.id as element_id, el.libile  "
@@ -1258,9 +1159,7 @@ public function index() {
                 . "WHERE el.id = $element_id AND "
                 . "n.element_id = el.id AND "
                 . "et.id = e.etudiant_id AND "
-                . "e.id = n.etudier_id AND "
-                . "e.groupe_id = $classe_id AND "
-                . "e.annee_scolaire_id = $annee_scolaire_id"
+                . "e.id = n.etudier_id "
             );
         }
         else{
@@ -1286,8 +1185,6 @@ public function index() {
         $lenght  = $this->request->data('lenght');
         $filename = $file['tmp_name'];
         $inserted = array();
-        
-        
         if ($file['size'] > 0) {
             //update =======>
 
@@ -1325,7 +1222,7 @@ public function index() {
                 if($saved == 0){
                     $noteTable = TableRegistry::get('Notes');
                     $note = $noteTable->newEntity();
-                    $note->note = 0; // i change NULL with 0
+                    $note->note = NULL;
                     $note->element_id = $element_id;
                     $note->saved = 1;
                     $note->confirmed = 0;
@@ -1616,21 +1513,6 @@ public function index() {
     private function getClasses($prof_id, $semestre, $annee_scolaire){
         $conn = ConnectionManager::get('default');
         $stmt = $conn->execute(
-            "SELECT DISTINCT grp.id as class_id, f.libile as feliere_lib, n.libile as nivaux_lib, ens.id as enseigner_id 
-             FROM elements elt, modules m, semestres s, groupes grp, filieres f, niveaus n, profpermanents p, enseigners ens, annee_scolaires a
-             WHERE p.id = $prof_id  AND p.id = ens.profpermanent_id AND elt.id = ens.element_id  AND m.id = elt.module_id
-                AND   grp.id = m.groupe_id AND n.id = grp.niveaus_id and ens.semestre_id = s.id and (s.libile like '$semestre[0]' OR s.libile like '$semestre[1]'
-                OR   s.libile like '$semestre[2]') and f.id = grp.filiere_id and ens.annee_scolaire_id = a.id 
-                and a.libile like '$annee_scolaire' GROUP BY(class_id)"
-        );
-
-        return  $stmt->fetchAll('assoc');
-    }
-
-    /*
-    private function getClasses($prof_id, $semestre, $annee_scolaire){
-        $conn = ConnectionManager::get('default');
-        $stmt = $conn->execute(
             "SELECT DISTINCT c.id as class_id , f.libile as feliere_lib , n.libile as nivaux_lib, e.id as enseigner_id 
                         FROM groupes c, filieres f, niveaus n, semestres s, annee_scolaires a, enseigners e, profpermanents p 
                         WHERE e.semestre_id = s.id AND 
@@ -1647,7 +1529,7 @@ public function index() {
 
         return  $stmt->fetchAll('assoc');
     }
-    */
+
     private function getAnneeScolaire($etudier_id){
         if ($etudier_id != null) {
             $conn = ConnectionManager::get('default');
@@ -1694,7 +1576,7 @@ public function index() {
                 $box[$i]['classes']['modeles'] = $modeles;
                 if ($modeles != null) {
                     for($j = 0; $j < count($modeles); $j++){
-                        if ($modeles[$j] != null /*&& !empty($classes[$j])*/) {
+                        if ($modeles[$j] != null && !empty($classes[$j])) {
                             $modele_id = $modeles[$j]['id'];
                             $elements = $this->getElements($prof_id, $modele_id);
                             $box[$i]['classes']['modeles'][$j]['elements'] = $elements;
@@ -1765,9 +1647,9 @@ public function index() {
                         FROM notes n, etudiers e
                         WHERE n.confirmed = 1 AND
                         n.note_ratt IS NOT NULL AND
-                        n.element_id = $element_id AND
+                        n.element_id = 10 AND
                         n.etudier_id = e.id AND 
-                        e.annee_scolaire_id = $annee_scolaire"
+                        e.annee_scolaire_id = 1"
             );
             $nbr_note = $stmt->fetchAll('assoc')[0]['nbr_note'];
             return $nbr_note_confermed == $nbr_note;
@@ -1812,12 +1694,8 @@ public function index() {
     }
 
     private function count_students_have_note($element_id) {
-        $annes_scolaire_id = $this->getSchoolId();
-        //$annes_scolaire_id = $anne_scolaire[0]['id'];
         $conn = ConnectionManager::get('default');
         if($this->isRattrapage($element_id)){
-//            echo '<pre>';
-//            print_r($annes_scolaire_id);die();
             $stmt = $conn->execute(
                 "SELECT count(et.id) AS nbr_etudiant_note
                             FROM notes n, elements el, etudiants et , etudiers e 
@@ -1825,8 +1703,7 @@ public function index() {
                             n.element_id = el.id AND 
                             et.id = e.etudiant_id AND
                             e.id = n.etudier_id AND 
-                            n.ratt_confirmed = 1 AND 
-                            e.annee_scolaire_id = $annes_scolaire_id"
+                            n.ratt_confirmed = 1"
             );
 
             return  $stmt->fetchAll('assoc');
@@ -1839,8 +1716,7 @@ public function index() {
                             n.element_id = el.id AND 
                             et.id = e.etudiant_id AND
                             e.id = n.etudier_id AND 
-                            n.confirmed = 1 AND 
-                            e.annee_scolaire_id = $annes_scolaire_id"
+                            n.confirmed = 1"
             );
 
             return  $stmt->fetchAll('assoc');
@@ -1848,7 +1724,6 @@ public function index() {
     }
 
     private function count_students_in_element($classe_id, $element_id) {
-        $annes_scolaire_id = $this->getSchoolId();
         $conn = ConnectionManager::get('default');
         $stmt = $conn->execute(
             "SELECT count(et.id) AS nombre_etudiants
@@ -1856,8 +1731,7 @@ public function index() {
                         WHERE el.id = $element_id AND 
                         e.element_id = el.id AND 
                         et.id = e.etudiant_id AND 
-                        e.groupe_id = $classe_id AND 
-                        e.annee_scolaire_id = $annes_scolaire_id"
+                        e.groupe_id = $classe_id"
         );
 
         return  $stmt->fetchAll('assoc');
@@ -1949,7 +1823,6 @@ public function index() {
 //    }
 
     /***** Fin Benshaydaaaaa   ******/
-
     /** youness** */
 
     public function etatDemande()
@@ -2182,34 +2055,12 @@ public function index() {
 
         if ($this->request->is(['patch', 'post', 'put'])) {
 
-
-            $profpermanent = $Profpermanent->newEntity();
-            //$profpermanent= $Profpermanent->patchEntity($profpermanent, $this->request->data);
-
-            $profpermanent->somme=$this->request->data('somme');
-            $profpermanent->salaire=$this->request->data('salaire');
-            $profpermanent->etat=$this->request->data('etat');
-            $profpermanent->date_Recrut=$this->request->data('dateRecrut');
-            $profpermanent->nom_prof=$this->request->data('nom_prof');
-            $profpermanent->prenom_prof=$this->request->data('prenom_prof');
-            $profpermanent->age=$this->request->data('age');
-            $profpermanent->diplome=$this->request->data('diplome');
-            $profpermanent->specialite=$this->request->data('specialite');
-            $profpermanent->universite=$this->request->data('universite');
-            $profpermanent->autresdiplomes=$this->request->data('autresdiplomes');
-            $profpermanent->situation_familiale=$this->request->data('situation_familiale');
-            // $profpermanent->dateNaissance=$this->request->data('dateNaissance');
-            $profpermanent->Lieu_Naissance=$this->request->data('Lieu_Naissance');
-            $profpermanent->CIN=$this->request->data('CIN');
-            $profpermanent->email_prof=$this->request->data('email_prof');
-            $profpermanent->phone=$this->request->data('phone');
-
-            //dump($profpermanent);exit;
-
-            if ($Profpermanent->save($profpermanent)) {
+            $profpermanentbis = $Profpermanent->newEntity();
+            $profpermanentbis = $Profpermanent->patchEntity($profpermanentbis, $this->request->data);
+            $profpermanentbis->id = $id;
+            if ($Profpermanent->save($profpermanentbis)) {
                 $this->Flash->success(__('Votre demande de modification de données a été envoyée au responsable , veuillez attendre son traitement .
                 '));
-
                 //return $this->redirect(['action' => 'index']);
             } else {
                 $this->Flash->error(__('The {0} could not be saved. Please, try again.', 'Profpermanent'));
@@ -2219,35 +2070,6 @@ public function index() {
         $this->render('/Espaces/profpermanents/editmouna');
 
     }
-
-    /**
-     * Add method
-     *
-     * @return \Cake\Network\Response|void Redirects on successful add, renders view otherwise.
-     */
-    /* public function add()
-     {
-         $profpermanent = $this->Profpermanents->newEntity();
-         if ($this->request->is('post')) {
-             $profpermanent = $this->Profpermanents->patchEntity($profpermanent, $this->request->data);
-             if ($this->Profpermanents->save($profpermanent)) {
-                 $this->Flash->success(__('The {0} has been saved.', 'Profpermanent'));
-                 return $this->redirect(['action' => 'index']);
-             } else {
-                 $this->Flash->error(__('The {0} could not be saved. Please, try again.', 'Profpermanent'));
-             }
-         }
-         $this->set(compact('profpermanent'));
-         $this->set('_serialize', ['profpermanent']);
-     }*/
-
-    /**
-     * Edit method
-     *
-     * @param string|null $id Profpermanent id.
-     * @return \Cake\Network\Response|void Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Network\Exception\NotFoundException When record not found.
-     */
 
     /**
      * Delete method

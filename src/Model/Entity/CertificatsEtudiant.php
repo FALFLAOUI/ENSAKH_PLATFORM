@@ -9,17 +9,9 @@ use Cake\ORM\Entity;
  * @property int $id
  * @property int $certificat_id
  * @property int $etudiant_id
- * @property string $etat
- * @property string $commentaire
  * @property \Cake\I18n\Time $created
  * @property \Cake\I18n\Time $modified
- * @property string $entreprise
- * @property string $raison_retrait
- * @property int $duree_stage
- * @property string $theme_stage
- * @property \Cake\I18n\Time $debut_stage
- * @property \Cake\I18n\Time $fin_stage
- * @property int $profpermanent_id
+ * @property string $etat
  *
  * @property \App\Model\Entity\Certificat $certificat
  * @property \App\Model\Entity\Etudiant $etudiant
@@ -38,6 +30,7 @@ class CertificatsEtudiant extends Entity
      */
     protected $_accessible = [
         '*' => true,
-        'id' => false
+        'certificat_id' => false,
+        'etudiant_id' => false
     ];
 }

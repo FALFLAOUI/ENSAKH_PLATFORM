@@ -9,8 +9,6 @@ use Cake\Validation\Validator;
 /**
  * CourrierDeparts Model
  *
- * @property \Cake\ORM\Association\BelongsTo $Destinataires
- *
  * @method \App\Model\Entity\CourrierDepart get($primaryKey, $options = [])
  * @method \App\Model\Entity\CourrierDepart newEntity($data = null, array $options = [])
  * @method \App\Model\Entity\CourrierDepart[] newEntities(array $data, array $options = [])
@@ -30,15 +28,20 @@ class CourrierDepartsTable extends Table
      */
     public function initialize(array $config)
     {
-        parent::initialize($config);
+         parent::initialize($config);
 
-        $this->setTable('courrier_departs');
-        $this->setDisplayField('id');
-        $this->setPrimaryKey('id');
+        $this->table('courrier_departs');
+        $this->displayField('id');
+        $this->primaryKey('id');
         $this->addBehavior('Timestamp');
 
         $this->belongsTo('Destinataires', [
-            'foreignKey' => 'destinataire_id',
+            'foreignKey' => 'nomComplet_destinataire',
+            'joinType' => 'INNER'
+        ]);
+
+        $this->belongsTo('Destinataires', [
+            'foreignKey' => 'id',
             'joinType' => 'INNER'
         ]);
     }
@@ -56,7 +59,7 @@ class CourrierDepartsTable extends Table
             ->allowEmpty('id', 'create');
 
         $validator
-            ->date('date_depart')
+            ->dateTime('date_depart')
             ->requirePresence('date_depart', 'create')
             ->notEmpty('date_depart');
 
@@ -65,16 +68,16 @@ class CourrierDepartsTable extends Table
             ->notEmpty('désignation');
 
         $validator
+            ->requirePresence('service', 'create')
+            ->notEmpty('service');
+
+        $validator
+            ->requirePresence('nomComplet_destinataire', 'create')
+            ->notEmpty('nomComplet_destinataire');
+
+        $validator
             ->requirePresence('type_courrier', 'create')
             ->notEmpty('type_courrier');
-
-        $validator
-            
-            ->allowEmpty('service');
-
-        $validator
-            ->requirePresence('necessite', 'create')
-            ->notEmpty('necessite');
 
         $validator
             ->requirePresence('etat_courrier', 'create')
@@ -89,19 +92,5 @@ class CourrierDepartsTable extends Table
             ->notEmpty('accuse');
 
         return $validator;
-    }
-
-    /**
-     * Returns a rules checker object that will be used for validating
-     * application integrity.
-     *
-     * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
-     * @return \Cake\ORM\RulesChecker
-     */
-    public function buildRules(RulesChecker $rules)
-    {
-        $rules->add($rules->existsIn(['destinataire_id'], 'Destinataires'));
-
-        return $rules;
     }
 }

@@ -1,4 +1,4 @@
-<?php $this->layout = 'AdminLTE.print';include 'N2TEXT.php';?>
+<?php $this->layout = 'AdminLTE.print';?>
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -56,28 +56,17 @@
 <div class="row">
       <div class="col-xs-5" style="border: solid 2px;height: 250px">
         <strong>Le Doyen</strong> 
-        <?php
-
-                $number = number_format((float)($t), 2, '.', '');
-        
-                $num=(string)$number;
-        
-                $pieces = explode(".", $num);
-                $som = new ConvertNumberToText();$d =$som->Convert($pieces[0]);
-                $p=explode("(", $d);
-
-                ?>
-        Certifie que les déplacements mentionnés au présent état ont eu lieu pour les besoins de service.<br>Arrêté à la somme de :<b><?php  echo strtoupper($p[0])." DIRHAMS ".$pieces[1]." CTS"; echo " ( ".$t."DH )";?></b><br>
+        Certifie que les déplacements mentionnés au présent état ont eu lieu pour les besoins de service.<br>Arrêté à la somme de :<b><?=$t?> Dhs</b><br>
         <b>Khouribga, le</b> 
       </div>
       <div class="col-xs-5" style="height: 250px">
-        Arrêté le présent Etat à la somme de : <b><?php  echo strtoupper($p[0])." DIRHAMS ".$pieces[1]." CTS"; echo " ( ".$t."DH )";?></b><br>
+        Arrêté le présent Etat à la somme de : <b><?=$t?> Dhs</b><br>
         par le soussigné qui atteste n’avoir bénéficié d’aucune réduction sur les sommes dont il demande le remboursement <br>   
         <b>A Khouribga, le : <br>   
         Signature du bénéficiaire:</b> <br>   
       </div>
       <div class="col-xs-5" style="border: solid 2px;">
-        Arrêté par nous <b>L'ordonnateur Secondaire</b> à la somme de :<b><?php  echo strtoupper($p[0])." DIRHAMS ".$pieces[1]." CTS"; echo " ( ".$t."DH )";?></b><br>
+        Arrêté par nous <b>L'ordonnateur Secondaire</b> à la somme de :<b><?=$t?> Dhs</b><br>
         A Khouribga, le : <br> <br><br><br><br><br>     
       </div>
 </div>

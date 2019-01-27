@@ -1,7 +1,6 @@
 <!-- Content Header (Page header) -->
 <section class="content-header">
-
-
+  <h1>
   <?php
   foreach ($profpermanentsDocuments as $documentsProfesseur)
   {
@@ -11,13 +10,13 @@
   }
   if(!isset($nom))
   {
-   ?> <div class="panel-heading">Aucune Demande n'a été déposé</div>  <?php
+   ?> Aucune Demande déposé actuellement <?php
   }
   else
   {
-?><div class="panel panel-primary">
-    <div class="panel-heading">Demandes déposées par : <?php echo $nom .' '.$prenom; }
-?></div>
+?>
+    Demande déposés par : <?php echo $nom .' '.$prenom; }
+?>
   </h1>
 </section>
 
@@ -27,6 +26,7 @@
     <div class="col-xs-12">
       <div class="box">
         <div class="box-header">
+          <h3 class="box-title">Documents Demandés</h3>
 
         </div>
         <!-- /.box-header -->
@@ -50,28 +50,20 @@
 
 
               <td><?= h($documentsProfesseur->profpermanent->somme)?></td>
-                  <td><?= h($documentsProfesseur->dateDemande)?></td>
+                  <td><?= h($documentsProfesseur->date_demande)?></td>
                  <td><?= h($documentsProfesseur->document->nomDocument)?></td>
                  <td><?= h($documentsProfesseur->etatdemande)?></td>
                  <td class="actions" style="white-space:nowrap">
 
                                                  <?php
-                                                 if(strcmp($documentsProfesseur->etatdemande, 'Demande envoyÃ©') == 0)
+                                                 if(strcmp($documentsProfesseur->etatdemande, 'Demande envoyé') == 0)
                                                  {
                                                      echo $this->Html->link(__('Approuver'), ['action' => 'approuverDemande', $documentsProfesseur->document_id,$documentsProfesseur->profpermanent_id], ['class'=>'btn btn-info btn-xs']  );
 
                                                  }
-                                                 elseif($documentsProfesseur->etatdemande=='En cours de traitement'  )
+                                                 elseif($documentsProfesseur->etatdemande=='En cours de traitement')
                                                  {
-                                                 if($documentsProfesseur->document->nomDocument=='AttestationTravail')
-                                                 {
-                                                  echo $this->Html->link(__('Imprimer'), ['action' => 'imprimerDocument', $documentsProfesseur->document_id,$documentsProfesseur->profpermanent_id], ['class'=>'btn btn-warning btn-xs']  ) ;
-
-                                                 }
-                                                 elseif($documentsProfesseur->document->nomDocument=='FicheSalaire')
-                                                 {
-                                                  echo $this->Html->link(__('Ajouter au Panier'), ['action' => 'panier', $documentsProfesseur->document_id,$documentsProfesseur->profpermanent_id], ['class'=>'btn btn-warning btn-xs']  ) ;
-                                                 }
+                                                 echo $this->Html->link(__('Imprimer'), ['action' => 'imprimerDocument', $documentsProfesseur->document_id,$documentsProfesseur->profpermanent_id], ['class'=>'btn btn-warning btn-xs']  ) ;
 
                                                   }
                                                  elseif($documentsProfesseur->etatdemande=='Prete')

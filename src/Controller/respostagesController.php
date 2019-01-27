@@ -21,7 +21,7 @@ class respostagesController extends AppController {
         if($usrole!='respostage' && $usrole!='admin')
         {
 
-            $this->Flash->error(__('Vous ne pouvez pas accéder a ce lien'));
+            $this->Flash->error(__('Vous ne pouvez pas acceder a ce lien'));
             return $this->redirect(
                 ['controller' => 'Users', 'action' => 'logout']
             );
@@ -29,47 +29,12 @@ class respostagesController extends AppController {
         $this->Auth->deny();
 
     }
-
-   /**********************************************************************************************************************/
-// home du responsable
-
     public function index() {
-        $connection = ConnectionManager::get('default');
 
-       $donne_demande =  $connection->execute('SELECT certificats_etudiants.id AS cer_id FROM certificats_etudiants
-                                                               JOIN certificats ON certificats_etudiants.certificat_id = certificats.id 
-                                                               WHERE certificats_etudiants.etat = "Demande envoyé" AND certificats.type LIKE "%stage" ')->fetchAll('assoc');
-        
-       $nbre=count($donne_demande);
-        $envoye='"Demande envoyé"';
-       $enCours='"En cours de traitement"';
-       $prete='"Prête"';
-       $delivre='"Délivré"';
-       $rejeter='"Rejeter"';
-       $nEnvoye= $this->nbre(NULL,$envoye);
-       $nEncours= $this->nbre(NULL,$enCours);
-       $nPrete=$this->nbre(NULL,$prete);
-       $nDelivre=$this->nbre(NULL,$delivre);
-       $nRejete=$this->nbre(NULL,$rejeter);
-       $this->set('nEnvoye',$nEnvoye);
-       $this->set('nEncours',$nEncours);
-       $this->set('nPrete',$nPrete);
-       $this->set('nDelivre',$nDelivre);
-       $this->set('nRejete',$nRejete);
-
-
-      
-        $this->render('/Espaces/respostages/home'); 
-    }
-/******************************************************************************************************************************************/
-// creation automatique du dossier    
-    private function dossier(){
-         $a=date("Y-m-d");
-        $path = 'files' . DS . $a;
-        $folder = new Folder($path);
-
-        if (is_null($folder->path)) {
-             $dir = new Folder(WWW_ROOT.'certificats stage'.DS.$a, true, 0755);
+        $usrole = $this->Auth->user('role');
+        if($usrole=='respostage') {
+            $this->set('role', $usrole);
+            $this->render('/Espaces/respostages/home');
         }
     }
     public function indexCertificatsEtudiants($f = NULL)  {
@@ -143,21 +108,63 @@ class respostagesController extends AppController {
        
     }
 
-//******************************************************************************************************************/
+
+   /**********************************************************************************************************************/
+// home du responsable
+
+    public function indexrespo() {
+        $connection = ConnectionManager::get('default');
+
+       $donne_demande =  $connection->execute('SELECT certificats_etudiants.id AS cer_id FROM certificats_etudiants
+                                                               JOIN certificats ON certificats_etudiants.certificat_id = certificats.id 
+                                                               WHERE certificats_etudiants.etat = "Demande envoyé" AND certificats.type LIKE "%stage" ')->fetchAll('assoc');
+        
+       $nbre=count($donne_demande);
+        $envoye='"Demande envoyé"';
+       $enCours='"En cours de traitement"';
+       $prete='"Prête"';
+       $delivre='"Délivré"';
+       $rejeter='"Rejeter"';
+       $nEnvoye= $this->nbre(NULL,$envoye);
+       $nEncours= $this->nbre(NULL,$enCours);
+       $nPrete=$this->nbre(NULL,$prete);
+       $nDelivre=$this->nbre(NULL,$delivre);
+       $nRejete=$this->nbre(NULL,$rejeter);
+       $this->set('nEnvoye',$nEnvoye);
+       $this->set('nEncours',$nEncours);
+       $this->set('nPrete',$nPrete);
+       $this->set('nDelivre',$nDelivre);
+       $this->set('nRejete',$nRejete);
+
+
+      
+        $this->render('/Espaces/respostages/home'); 
+    }
+/******************************************************************************************************************************************/
+// creation automatique du dossier    
+    private function dossier()
+    { $a=date("Y-m-d");
+    $path = 'files' . DS . $a;
+$folder = new Folder($path);
+
+if (is_null($folder->path)) {
+    $dir = new Folder(WWW_ROOT.'certificats stage'.DS.$a, true, 0755);
+  }
+     
+  
+    }
+/**************************************************************************************************************************/
 // afficher certificat de l'atudiant    
-      public function viewCertificatsEtudiants($id = null){
-      $CertificatsEtudiants = TableRegistry::get("certificats_etudiants");
+      public function viewCertificatsEtudiants($id = null)
+    {
+    	$CertificatsEtudiants = TableRegistry::get("certificats_etudiants");
         $certificatsEtudiant = $CertificatsEtudiants->get($id, [
             'contain' => ['Certificats', 'Etudiants']
         ]);
+        
+        $certificatsEtudiant->notif_respo = FALSE;
+        $certificatsEtudiant->modified = $certificatsEtudiant->modified;
         if($CertificatsEtudiants->save($certificatsEtudiant)){
-
-            $Notifications_users = TableRegistry::get("notifications_users");
-            $Notifications_users->deleteAll(['lien LIKE "viewCertificats%/'.$id.'"']);
-            
-            $Notifications_grp = TableRegistry::get("notifications_groupe");
-            $Notifications_grp->deleteAll(['lien LIKE "viewCertificats%/'.$id.'"']);
-
             $this->set('certificatsEtudiant', $certificatsEtudiant);
             $this->set('_serialize', ['certificatsEtudiant']);    
                  
@@ -236,7 +243,7 @@ class respostagesController extends AppController {
       {
         $this->request->allowMethod(['post', 'delete']);
         $connection=ConnectionManager::get('default');
-        $connection->execute('TRUNCATE TABLE certificats_etudiants  ');
+        $connection->execute('TRUNCATE TABLE certificats_etudiants');
         return $this->redirect(['action' => 'indexCertificatsEtudiants']);  
 
       }
@@ -249,10 +256,8 @@ class respostagesController extends AppController {
     {
         
          
-                
-         
         $connection = ConnectionManager::get('default');
-      
+    	
         $CertificatsEtudiants = TableRegistry::get("certificats_etudiants");
         $certificatsEtudiant = $CertificatsEtudiants->get($id, [
             'contain' => ['Certificats', 'Etudiants']
@@ -267,40 +272,15 @@ class respostagesController extends AppController {
               $f=$donne[0]['id'];
         if ($this->request->is(['patch', 'post', 'put']) && !isset($this->request->data['Rejeter'])) {
             $certificatsEtudiant->commentaire = $this->request->data['commentaire'];
-
+            $certificatsEtudiant->notif_etudiant = TRUE;
             if (isset($this->request->data['rejeterprince']) && $this->request->data['rejeterprince']) {
               $certificatsEtudiant->etat = "Rejeter";
             }
-            switch ($certificatsEtudiant->etat){
-                case 'Rejeter' : 
-                    $donne_notif['style'] = "badge bg-red";
-                break;
-                case 'En cours de traitement' : 
-                    $donne_notif['style'] = "badge bg-yellow" ;
-                break;
-                case 'Demande envoyé' : 
-                    $donne_notif['style'] = "badge bg-light-blue";
-                break;
-                case 'Prête' : 
-                    $donne_notif['style'] ="badge bg-green";
-                break;
-                case 'Délivré' : 
-                    $donne_notif['style'] = "badge bg-navy";
-                break;
-            } 
-
-            $donne_notif['user_id']  = $certificatsEtudiant->etudiant->user_id;
-            $donne_notif['principale'] = 'Un responsable a commenter votre demande: '.$certificatsEtudiant->certificat->type;
-            $donne_notif['commentaire'] = $this->request->data['commentaire'];
-            $donne_notif['lien'] = 'viewCertificats/'.$id;
-            $donne_notif['titre'] = $certificatsEtudiant->etat;
-            
             if ($CertificatsEtudiants->save($certificatsEtudiant)) {
-                $this->preparerNotification($donne_notif,"indiv");
                 $this->Flash->success(__('Le commentaire est envoyé.'));;
                 return $this->redirect(['action' => 'indexCertificatsEtudiants/'.$f.'']);                
             }
-            $this->Flash->error(__('Le commentaire n \' est pas envoyé. Réssayer'));
+            $this->Flash->error(__('Le commentaire n est pas envoyé. Réssayer'));
         }
         $certificats = $CertificatsEtudiants->Certificats->find('list', ['limit' => 200]);
         $etudiants = $CertificatsEtudiants->Etudiants->find('list', ['limit' => 200]);
@@ -325,7 +305,7 @@ class respostagesController extends AppController {
         $CertificatsEtudiants = TableRegistry::get("certificats_etudiants");
 
         $certificatsEtudiant = $CertificatsEtudiants->get($id, [
-            'contain' => ["Etudiants","Certificats"]
+            'contain' => []
         ]);
 
        
@@ -337,48 +317,24 @@ class respostagesController extends AppController {
                                                                JOIN certificats ON certificats_etudiants.certificat_id = certificats.id 
                                                                WHERE certificats_etudiants.id = :id',[':id'=>$id])->fetchAll('assoc');
               $f=$donne[0]['id'];
+       
         switch ($this->request->data['editer']) {
             case 'Approuver':
                 $certificatsEtudiant->etat = "En cours de traitement";
+                $certificatsEtudiant->notif_etudiant=1;
                 break;
             case 'Valider':
                 $certificatsEtudiant->etat = "Prête";
+                $certificatsEtudiant->notif_etudiant=1;
                 break;
             case 'Délivrer':
                 $certificatsEtudiant->etat = "Délivré";
-                break;                 
+                $certificatsEtudiant->notif_etudiant=1;
+                break;  
+                  
+                        
         }
-            if (isset($this->request->data['rejeterprince']) && $this->request->data['rejeterprince']) {
-              $certificatsEtudiant->etat = "Rejeter";
-            }
-            
-            switch ($certificatsEtudiant->etat){
-                case 'Rejeter' : 
-                    $donne_notif['style'] = "badge bg-red";
-                break;
-                case 'En cours de traitement' : 
-                    $donne_notif['style'] = "badge bg-yellow" ;
-                break;
-                case 'Demande envoyé' : 
-                    $donne_notif['style'] = "badge bg-light-blue";
-                break;
-                case 'Prête' : 
-                    $donne_notif['style'] ="badge bg-green";
-                break;
-                case 'Délivré' : 
-                    $donne_notif['style'] = "badge bg-navy";
-                break;
-            }
-
-            $query = $certificatsEtudiant->toArray();
-            $donne_notif['user_id']  = $query['etudiant']['user_id'];
-            $donne_notif['principale'] = 'Votre '.$query['certificat']['type'].' est declaré comme: '.$certificatsEtudiant->etat;
-            $donne_notif['commentaire'] = $query['commentaire'];
-            $donne_notif['lien'] = 'viewCertificats/'.$id;
-            $donne_notif['titre'] = $certificatsEtudiant->etat;
-
             if ($CertificatsEtudiants->save($certificatsEtudiant)) {
-                $this->preparerNotification($donne_notif,"indiv");
                 $this->Flash->success(__($this->request->data));
                 return $this->redirect(['action' => 'indexCertificatsEtudiants']);
             }
@@ -403,16 +359,11 @@ class respostagesController extends AppController {
                     if($key != "vider")
                     $certif_id[] = $key;
                 }
-                if(!empty($certif_id)){
                if($CertificatsEtudiants->deleteAll(["certificat_id IN(".implode(',', $certif_id).")"])){
-                   $this->Flash->success(__('Réinitialisation avec success'));
+                   $this->Flash->success(__('Réinitilisation avec success'));
                }else{
                    $this->Flash->error(__('Erreur'));
                }
-              }else{
-                  $this->Flash->error(__('Vous n\'avez rien selectionner.'));
-               return $this->redirect(['action'=>'reinitialiserCertificatsEtudiants']);
-              }
                return $this->redirect(['action'=>'indexCertificatsEtudiants']);
             }
          $this->render('/Espaces/respostages/CertificatsEtudiants/choix');
@@ -597,10 +548,10 @@ class respostagesController extends AppController {
         $this->request->data['type'] =$a.'-stage';
             $certificat = $Certificats->patchEntity($certificat, $this->request->data);
             if ($Certificats->save($certificat)) {
-                $this->Flash->success(__('Le certificat est ajouté'));
+                $this->Flash->success(__('The {0} has been saved.', 'Certificat'));
                 return $this->redirect(['action' => 'indexCertificats']);
             } else {
-                $this->Flash->error(__('Erreur inattendue'));
+                $this->Flash->error(__('The {0} could not be saved. Please, try again.', 'Certificat'));
             }
         }
         $connection = ConnectionManager::get('default');
@@ -627,10 +578,10 @@ class respostagesController extends AppController {
         if ($this->request->is(['patch', 'post', 'put'])) {
             $certificat = $Certificats->patchEntity($certificat, $this->request->data);
             if ($Certificats->save($certificat)) {
-                $this->Flash->success(__('Le certificat est modifié'));
+                $this->Flash->success(__('The {0} has been saved.', 'Certificat'));
                 return $this->redirect(['action' => 'indexCertificats']);
             } else {
-                $this->Flash->error(__('Erreur inattendue'));
+                $this->Flash->error(__('The {0} could not be saved. Please, try again.', 'Certificat'));
             }
         }
         $this->set(compact('certificat', 'etudiants'));
@@ -646,13 +597,65 @@ class respostagesController extends AppController {
         $Certificats = TableRegistry::get("certificats");
         $certificat = $Certificats->get($id);
         if ($Certificats->delete($certificat)) {
-            $this->Flash->success(__('Le certificat est supprimé'));
+            $this->Flash->success(__('The {0} has been deleted.', 'Certificat'));
         } else {
-            $this->Flash->error(__('Erreur inattendue'));
+            $this->Flash->error(__('The {0} could not be deleted. Please, try again.', 'Certificat'));
         }
         return $this->redirect(['action' => 'indexCertificats']);
 
     }
+/*******************************************************************************************************************************************************/
+/*******************************************************************************************************************************************************/
+/*******************************************************************************************************************************************************/
+/*******************************************************************************************************************************************************/
+// notifications resposcolarites
+
+   public function updateNotifications(){
+
+        $connection = ConnectionManager::get('default');
+
+        $usrole=$this->Auth->user('id');
+        $test =  $connection->execute('SELECT certificats_etudiants.id,etudiants.nom_fr,etudiants.prenom_fr, certificats_etudiants.etat, filieres.libile, 
+                                        certificats.type, certificats_etudiants.modified FROM filieres JOIN groupes ON filieres.id = groupes.filiere_id
+                                                               JOIN etudiers ON groupes.id = etudiers.groupe_id
+                                                               JOIN etudiants ON etudiers.etudiant_id = etudiants.id
+                                                               JOIN certificats_etudiants ON etudiants.id = certificats_etudiants.etudiant_id 
+                                                               JOIN certificats ON certificats_etudiants.certificat_id = certificats.id 
+                                                               WHERE (certificats.type LIKE "%stage") AND (certificats_etudiants.notif_respo = TRUE)
+                                                               ')->fetchAll('assoc');
+
+        $notif_respo = array();
+        for($i=0;$i<count($test);$i++){
+                $notif_respo[$i]['id'] = $test[$i]['id'];
+                $notif_respo[$i]['commentaire'] = $test[$i]['nom_fr'].' '.$test[$i]['prenom_fr'].' de la filiere '.$test[$i]['libile'];
+                $notif_respo[$i]['principale'] = $test[$i]['etat'];
+                $notif_respo[$i]['titre'] = $test[$i]['type'];
+                $notif_respo[$i]['date'] = $test[$i]['modified'];
+                $notif_respo[$i]['lien'] = 'viewCertificatsEtudiants';
+                switch ($test[$i]['etat']){
+                            case 'Rejeter' : 
+                                    $notif_respo[$i]['style']= "badge bg-red";
+                                    break;
+                            case 'En cours de traitement' : 
+                                    $notif_respo[$i]['style']= "badge bg-yellow";
+                                    break;
+                            case 'Demande envoyé' : 
+                                    $notif_respo[$i]['style']= "badge bg-light-blue";
+                                    break;
+                            case 'Prête' : 
+                                    $notif_respo[$i]['style']= "badge bg-green";
+                                    break;
+                            case 'Délivré' : 
+                                    $notif_respo[$i]['style']= "badge bg-navy";
+                                    break;
+                            } 
+        }
+        $session = $this->request->session();
+        $session->write('notifications', $notif_respo);
+
+        $this->render('/Element/notification');
+    }
+
 
 }
 

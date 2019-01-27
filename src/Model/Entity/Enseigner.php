@@ -10,8 +10,9 @@ use Cake\ORM\Entity;
  * @property int $semestre_id
  * @property int $annee_scolaire_id
  * @property int $element_id
- * @property int $profpermanent_id
- * @property int $vacataire_id
+ * @property int $professeur_id
+ * @property \Cake\I18n\Time $created_at
+ * @property \Cake\I18n\Time $updated_at
  *
  * @property \App\Model\Entity\Semestre $semestre
  * @property \App\Model\Entity\AnneeScolaire $annee_scolaire
